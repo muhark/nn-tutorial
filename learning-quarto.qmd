@@ -1,0 +1,84 @@
+---
+title: "Visual Introduction to Deep Learning"
+author: "Musashi Jacobs-Harukawa, DDSS Princeton"
+format:
+    html:
+        code-fold: true
+jupyter: python3
+---
+
+# Introduction
+
+_Some thoughts and ideas_:
+
+- I want to help researchers build an intuition for what deep learning is, how it works, and why it is useful.
+
+# Drafting
+
+For the first part of this tutorial, we are going to consider a simple binary classification task with two dependent variables.
+
+```{python}
+#| eval: true
+#| echo: false
+
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+sns.set_style('whitegrid')
+```
+
+Let's use the `datasets.make_blobs()` function from `scikit-learn` to generate some classification data. I will also draw a random subset of these points to represent 
+
+
+```{python}
+# Generate data
+X, y = datasets.make_blobs(
+    n_samples=10_000,
+    n_features=2,
+    centers=2,
+    random_state=0)
+
+# Train-test split to simulate 
+X_samp, X_pop, y_samp, y_pop = train_test_split(X, y, test_size=0.9)
+
+```
+
+```{python}
+# Visualize
+fig, ax = plt.subplots(figsize=(15, 8))
+fig.suptitle("Two Blobs")
+ax.scatter(X_samp[:,0], X_samp[:,1], c=
+    ['#4444ff' if i==0 else '#ff4444' for i in y_samp],
+    alpha=1, s=8)
+ax.scatter(X_pop[:,0], X_pop[:,1], c=
+    ['#33e' if i==0 else '#e33' for i in y_pop],
+    ec='w', lw=0.05, alpha=1, s=4, zorder=0)
+plt.show()
+```
+
+
+
+
+For a demonstration of a line plot on a polar axis, see @fig-polar.
+
+```{python}
+#| label: fig-polar
+#| fig-cap: "A line plot on a polar axis"
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+r = np.arange(0, 2, 0.01)
+theta = 2 * np.pi * r
+fig, ax = plt.subplots(
+  subplot_kw = {'projection': 'polar'} 
+)
+ax.plot(theta, r)
+ax.set_rticks([0.5, 1, 1.5, 2])
+ax.grid(True)
+plt.show()
+```
