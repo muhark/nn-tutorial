@@ -4,8 +4,11 @@
 # @author:  Dr Musashi Jacobs-Harukawa, DDSS
 
 # %% imports
+from typing import Optional, List, Literal
+
 from sklearn import datasets
 from sklearn import svm, naive_bayes, tree
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 
 import matplotlib.pyplot as plt
@@ -16,6 +19,8 @@ import torch
 from torch import nn
 
 sns.set_style('darkgrid')
+
+%matplotlib inline
 
 # %% dataset generation
 # Generate data
@@ -81,6 +86,113 @@ def visualise_classification(
     ax.text(-0.5, 1.5, 'pred=0', ha='center')
     ax.text(2.5, -1.0, 'pred=1', ha='center')
     return fig
+
+# %% model visualization
+class ModelVisualization():
+    def __init__(self,
+                 model: nn.Module,
+                 X: np.ndarray,
+                 y: np.ndarray,
+                 h: float=0.02) -> None:
+        self.model = model
+        self.X = X
+        self.y = y
+        self.h = h
+        self.build_grid()
+        self.fit_grid(model=self.model)
+        self.build_figure(mode='plotly')
+
+    def build_grid(self,
+                   xmin: float,
+                   xmax: float,
+                   ymin: float,
+                   ymax: float,
+                   h: float) -> np.ndarray:
+        if all(e is None for e in [xmin, xmax, ymin, ymax]):
+            xmin = self.X[:,0].min()
+            xmax = self.X[:,0].max()
+            ymin = self.X[:,1].min()
+            ymax = self.X[:,1].max()
+        self.grid_x1, self.grid_x2 = np.meshgrid(np.arange(xmin-h, xmax+h, h),
+                                                 np.arange(ymin-h, ymax+h, h))
+        self.points = np.stack([grid_x1.reshape(-1), grid_x2.reshape(-1)], axis=1)
+        return self.points
+    
+    def fit_grid(self, model: nn.Module) -> np.ndarray:
+        preds = model.forward(self.points).detach().numpy()
+        self.preds = preds.reshape(self.grid_x1.shape)
+        return self.preds
+    
+    def build_figure(self,
+                     mode = Literal['matplotlib', 'plotly'],
+                     **kwargs) -> Union[go.Figure, plt.Figure]:
+        if mode == 'matplotlib':
+            fig, ax = plt.subplots()
+            ax.imshow(self.preds,
+                      origin='lower',
+                      extent=(self.grid_x1.min(), self.grid_x1.max(),
+                              self.grid_x2.min(), self.grid_x2.max()))
+            ax.scatter(self.X[:,0], self.X[:,1],
+                    c=['#4444ff' if i<=0 else '#ff4444' for i in y],
+                    alpha=0.5, s=4)
+        elif mode == 'plotly':
+            fig = go.Figure()
+            fig.add_trace( # Predictions map
+                go.Heatmap(x=np.arange(self.grid_x1.min(), self.grid_x1.max()),
+                           y=np.arange(self.grid_x2.min(), self.grid_x2.max()),
+                           z=self.preds,
+                           hoverongaps=False))
+            fig.add_trace( # Scatter of test data
+                go.Scatter(x=self.X[:, 0],
+                           y=self.X[:, 1],
+                           mode='markers',
+                           marker=dict(color=y_test),
+                           text=['Class 1' if y==1 else 'Class 0' for y in y_test]))
+        self.fig = fig
+
+
+
+
+# %% Regressors make more sense in the beginnning -- classifier can be seen as subset
+reg = LinearRegression()
+reg.fit(X_train, y_train)
+
+grid_x1, grid_x2 = np.meshgrid(np.arange(-1, 2.25, 0.25),
+                               np.arange(-1, 2.25, 0.25))
+points = np.stack([grid_x1.reshape(-1), grid_x2.reshape(-1)], axis=1)
+predictions = reg.predict(points).reshape(grid_x1.shape)
+
+# %% Matplotlib
+
+fig, ax = plt.subplots()
+
+ax.scatter(X_test[:, 0], X_test[:, 1], c=[ 'b' if i==0 else 'r' for i in y_test ])
+
+# %% Plotly
+import plotly.graph_objs as go
+
+fig = go.Figure()
+fig.add_trace(
+    go.Heatmap(x=np.arange(-1, 2.25, 0.25),
+               y=np.arange(-1, 2.25, 0.25),
+               z=predictions,
+               hoverongaps=False
+               ))
+
+
+fig.add_trace(
+    go.Scatter(x=X_test[:, 0],
+               y=X_test[:, 1],
+               mode='markers',
+               marker=dict(color=y_test),
+               text=['Class 1' if y==1 else 'Class 0' for y in y_test]
+))
+
+
+# fig.add_scatter(x=X_test[:, 0], y=X_test[:, 1], customdata=y_test, mode='markers')
+
+# fig = px.imshow(predictions, origin='lower')
+fig.show()
 
 # %% Fit SVM
 linear_svm = svm.SVC(kernel = 'linear')
