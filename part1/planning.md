@@ -31,7 +31,7 @@ author: "Musashi Jacobs-Harukawa"
         - Architectures for sequences: RNNs and Transformers.
     - tl;dr (One-Slide Version)
         - _Neural networks are basically nested regression models with discontinuities_.
-        - _Backpropogation is a technique that allows us to calculate the loss gradient of every parameter in a network_.
+        - _Backpropagation is a technique that allows us to calculate the loss gradient of every parameter in a network_.
         - _Loss gradients link each parameter to the overall accuracy of the model_.
         - _Stochastic gradient descent is an algorithm for updating parameters using loss gradients to improve accuracy_.
         - _By combining lots of regressions and introducing regressions, we can learn increasingly complex patterns in data_.
@@ -74,3 +74,21 @@ Broad headers/concepts/ways to organize:
 	- Modules are blueprints
 	- Training modules with batches, optimizers and dataloaders
  
+
+ # Graveyard
+
+\begin{align}
+\frac{\delta L}{\delta w_1} &= \frac{\delta L}{\delta\hat{y}} \frac{\delta \hat{y}}{\delta w_2}
+							&= 2(y-\hat{y}) h_1
+
+\end{align}
+
+- $\frac{\delta L}{\delta w_2} = \frac{\delta L}{\delta\hat{y}} \frac{\delta \hat{y}}{\delta w_2}$
+- $\frac{\delta L}{\delta w_1} = \frac{\delta L}{\delta\hat{y}} \frac{\delta\hat{y}}{\delta h_1} \frac{\delta h_1}{\delta w_1}$
+
+
+- $L = (y - w_{2}(w_{1}X + b_{1}) + b_{2})^2$
+- $h_1 = w_{1}X + b_{1}$
+- $\frac{\delta h_1}{\delta w_1} = X$
+- $\frac{\delta L}{\delta h_1} = -w_2$
+- $\frac{\delta L}{\delta w_1} = \frac{\delta L}{\delta h_1} \frac{\delta h_1}{\delta w_2}$
