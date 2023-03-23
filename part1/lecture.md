@@ -65,20 +65,13 @@ css: "minimal-theme.css"
 - How to learn from data with **optimization**.
 - How and why "ensembling" neurons is powerful.
 
-- _An "engineer's intuition" for modelling data._
-
-## Format
-
-- Lecture
-- Supplementary Code Book: <ADD LINK HERE>
-	- Contains same ideas as lecture
-	- Implements these ideas in `PyTorch`
+- _An intuition for an "engineer's approach" to modelling data._
 
 ## tl;dr (Lecture in One Slide)
 
 1. **Neural networks** are basically nested regression models with discontinuities.
-2. **Backpropagation** is a technique that allows us to calculate the loss gradient of every parameter in a network.
-3. **Loss gradients** link model parameters to the overall accuracy of the model.
+2. **Loss gradients** link model parameters to the overall accuracy of the model.
+3. **Backpropagation** is a technique that allows us to calculate the loss gradient of every parameter in a network.
 4. **Gradient descent** is an algorithm for updating parameters using loss gradients to improve accuracy.
 5. By "stacking" neurons and introducing discontinuities, we can learn complex patterns in data.
 
@@ -156,9 +149,9 @@ _We learn how to "manually" fit linear regressions._
 	- $\frac{\delta L(w, b)}{\delta w}$: describes how $L$ changes as we adjust $w$.
 	- $\frac{\delta L(w, b)}{\delta b}$: describes how $L$ changes as we adjust $b$.
 
-## Calculating the gradients
+## Understanding Gradients
 
-- Deep Learning libraries automate this step, but it's easy to do by hand!
+- I find calculating it "by hand" helps me understand what's happening.
 - [Definition of a partial derivative](https://en.wikipedia.org/wiki/Partial_derivative#Definition):
 
 . . .
@@ -167,13 +160,16 @@ $$
 \frac{\delta f(x)}{\delta x} \;=\; \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}
 $$
 
-## Calculating numerically
+## Numerical calculation
 
 $$
 \frac{\delta f(x)}{\delta x} \;=\; \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}
 $$
 
+. . .
+
 ``` {.python .numberLines}
+# Actual Python/PyTorch Code
 h = 0.0001                           # h as some arbitrarily small value
 fx =  (y0 - (x0 *  w    + b)).pow(2) # f(x)   (squared loss)
 fxh = (y0 - (x0 * (w+h) + b)).pow(2) # f(x+h)
@@ -295,67 +291,102 @@ For this data, we want a model that can:
 
 ![](figures/nn_2layer_1input.png)
 
-- $h_1 = w_{1}X + b_{1}$
-- $Y = w_{2}h_1 + b_{2}$
-- ergo $Y = w_{2}(w_{1}X + b_{1}) + b_{2}$
+- $h_1 = w_{1}x + b_{1}$
+- $y = w_{2}h_1 + b_{2}$
+- $y = w_{2}(w_{1}x + b_{1}) + b_{2}$
 
 ## And stacking it?
 
 ![](figures/nn_141.png)
 
-- $h_i = w_{1i}X + b_{1i}$ (bias omitted from diagram for simplicity)
-- $Y = \sum_i w_{2i}h_i + b_{2i}$
-- ergo $Y = \sum_i w_{2i}(w_{1i}X + b_{1i}) + b_{2i}$
+- $h_i = w_{1i}x + b_{1i}$ (bias omitted from diagram for simplicity)
+- $y = \sum_i w_{2i}h_i + b_{2i}$
+- $y = \sum_i w_{2i}(w_{1i}x + b_{1i}) + b_{2i}$
 
 ## We could create a model like this:
 
 ![](figures/nn_241.png)
 
-## But how do we fit something like this?
+## But how do we train this model?
 
 ![](figures/nn_2layer_1input.png)
 
-- Define loss: $L(w_1, b_1, w_2, b_2)$
+- If we can calculate loss gradients, we can use Gradient Descent.
+- Define loss wrt parameters: $L(w_1, b_1, w_2, b_2)$
 - How do we calculate $\frac{\delta L}{\delta w_1}$, $\frac{\delta L}{\delta w_2}$, etc.?
+	- We could use the numerical method before.
+	- But this requires 2 forward passes _per parameter_.
+	- There's something much faster.
 
-## Chains of equations
+## Backpropagation
+
+- Using the chain rule, we can state all gradients as a product of gradients on this graph.
+- From this we can derive expressions for all gradients as functions of known parameters, initial input and final output.
+- DL libraries manage all of this under the hood.
+
+## Breaking down $L(w_1, b_1, w_2, b_2)$
 
 ![](figures/backprop.png)
 
+::::: {.columns}
+::: {.column width="50%"}
 - $L = (y - \hat{y})^2$
 	- $\frac{\delta L}{\delta \hat{y}} = 2(y-\hat{y})$
 - $\hat{y} = w_{2}h_1 + b_{2}$
 	- $\frac{\delta \hat{y}}{\delta w_2} = h_1$
 	- $\frac{\delta \hat{y}}{\delta h_1} = w_2$
-- $h_1 = w_{1}X + b_{1}$
+	- $\frac{\delta \hat{y}}{\delta b_2} = 1$
+:::
+
+::: {.column width="50%"}
+- $h_1 = w_{1}x + b_{1}$
 	- $\frac{\delta h_1}{\delta w_1} = x$
+	- $\frac{\delta h_1}{\delta b_1} = 1$
+:::
+:::::
 
-## Chain Rule
+## Gradient for $w_1$
 
-Gradient for $w_1$:
 
-\begin{align}
-\frac{\delta L}{\delta w_1} &= \frac{\delta L}{\delta\hat{y}} \frac{\delta \hat{y}}{\delta w_2} \\
-							&= 2(y-\hat{y}) h_1
+$\frac{\delta L}{\delta \hat{w_2}} = ?$
 
-\end{align}
+- $\frac{\delta L}{\delta \hat{y}} = 2(y-\hat{y})$
+- $\frac{\delta \hat{y}}{\delta w_2} = h_1$
 
 . . .
 
-Gradient for $w_2$:
+Applying the chain rule:
+
 
 \begin{align}
-\frac{\delta L}{\delta w_1} &= \frac{\delta L}{\delta\hat{y}} \frac{\delta\hat{y}}{\delta h_1} \frac{\delta h_1}{\delta w_1} \\
-							&= 2(y-\hat{y}) w_2 x
+\frac{\delta L}{\delta w_1} &= \frac{\delta L}{\delta\hat{y}} \frac{\delta \hat{y}}{\delta w_2} \\
+							&= 2(y-\hat{y}) h_1 \\
+							&= 2(y-(w_{2}(w_{1}x + b_{1}) + b_{2})) w_{1}x + b_{1}
 
 \end{align}
 
-## Backpropagation
 
-- Using the chain rule, we can efficiently compute loss gradients of parameters throughout the network!
-- This is implemented neatly in deep learning libraries.
+## Gradient for $w_2$
 
-## Code vs Theory
+$\frac{\delta L}{\delta \hat{w_1}} = ?$
+
+- $\frac{\delta L}{\delta \hat{y}} = 2(y-\hat{y})$
+- $\frac{\delta \hat{y}}{\delta h_1} = w_2$
+- $\frac{\delta h_1}{\delta w_1} = x$
+
+. . .
+
+Applying the chain rule:
+
+\begin{align}
+\frac{\delta L}{\delta w_1} &= \frac{\delta L}{\delta\hat{y}} \frac{\delta\hat{y}}{\delta h_1} \frac{\delta h_1}{\delta w_1} \\
+							&= 2(y-\hat{y}) w_2 x \\
+							&= 2(y-(w_{2}(w_{1}x + b_{1})) + b_{2}) w_{2}x
+
+\end{align}
+
+
+## Theory in Code
 
 ![](figures/nn_241.png)
 
@@ -369,6 +400,11 @@ model   = torch.nn.Sequential(layer1, layer2)
 ## Mini-Batch Gradient Descent with MSE Loss
 
 ``` {.python .numberLines}
+# Define Model
+layer1  = SimpleLinearNN(features_in=2, features_out=4)
+layer2  = SimpleLinearNN(features_in=4, features_out=1)
+model   = torch.nn.Sequential(layer1, layer2)
+
 # Define Batch Sampler, Loss Function and Optimization
 data    = DataLoader(dataset, batch_size=8, shuffle=True)
 loss_fn = torch.nn.MSELoss()
@@ -378,6 +414,17 @@ optim   = torch.optim.SGD(model.parameters(), lr=5e-4)
 ## Training a Model for 50 Epochs
 
 ``` {.python .numberLines}
+# Define Model
+layer1  = SimpleLinearNN(features_in=2, features_out=4)
+layer2  = SimpleLinearNN(features_in=4, features_out=1)
+model   = torch.nn.Sequential(layer1, layer2)
+
+# Define Batch Sampler, Loss Function and Optimization
+data    = DataLoader(dataset, batch_size=8, shuffle=True)
+loss_fn = torch.nn.MSELoss()
+optim   = torch.optim.SGD(model.parameters(), lr=5e-4)
+
+# Training
 for epoch in range(50):
     for inputs, labels in data: # X, y
         optim.zero_grad() # Reset gradients
@@ -395,6 +442,9 @@ for epoch in range(50):
 
 - Turns out: stacking/layering linear models reduces to a linear model!
 
+# Deep Learning Basics
+
+_Now we're doing deep learning!_
 
 ## The Missing Ingredient
 
@@ -408,9 +458,9 @@ Two components:
 1. Linear model: $z = \beta_1x + \beta_0$
 2. Sigmoid transformation: $y = \frac{1}{1+e^{-z}}$
 
-## Sigmoid transformation
+. . .
 
-<iframe width="100%" height="400px" frameborder="0" seamless='seamless' scrolling=no src="figures/sigmoid.html"></iframe>
+<iframe width="100%" height="300px" frameborder="0" seamless='seamless' scrolling=no src="figures/sigmoid.html"></iframe>
 
 - $\sigma(x)$ bounded between 0 and 1
 - When $x=0$, $\sigma(x)=0.5$.
@@ -447,9 +497,6 @@ $$
 
 <iframe width="100%" height="500px" frameborder="0" seamless='seamless' scrolling=no src="figures/figure12.html"></iframe>
 
-# Deep Learning Basics
-
-_Now we're doing deep learning!_
 
 ## When to stop training?
 
@@ -491,8 +538,8 @@ model = nn.Sequential(Perceptron(2, 4, nn.ReLU),
 ## Comprehension Check
 
 1. **Neural networks** are basically nested regression models with discontinuities.
-2. **Backpropagation** is a technique that allows us to calculate the loss gradient of every parameter in a network.
-3. **Loss gradients** link model parameters to the overall accuracy of the model.
+2. **Loss gradients** link model parameters to the overall accuracy of the model.
+3. **Backpropagation** is a technique that allows us to calculate the loss gradient of every parameter in a network.
 4. **Gradient descent** is an algorithm for updating parameters using loss gradients to improve accuracy.
 5. By "stacking" neurons and introducing discontinuities, we can learn complex patterns in data.
 

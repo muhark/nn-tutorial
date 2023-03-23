@@ -204,19 +204,8 @@ artificial neurons.</p></li>
 <strong>optimization</strong>.</p></li>
 <li class="fragment"><p>How and why “ensembling” neurons is
 powerful.</p></li>
-<li class="fragment"><p><em>An “engineer’s intuition” for modelling
-data.</em></p></li>
-</ul>
-</section>
-<section id="format" class="slide level2">
-<h2>Format</h2>
-<ul>
-<li class="fragment">Lecture</li>
-<li class="fragment">Supplementary Code Book: <ADD LINK HERE>
-<ul>
-<li class="fragment">Contains same ideas as lecture</li>
-<li class="fragment">Implements these ideas in <code>PyTorch</code></li>
-</ul></li>
+<li class="fragment"><p><em>An intuition for an “engineer’s approach” to
+modelling data.</em></p></li>
 </ul>
 </section>
 <section id="tldr-lecture-in-one-slide" class="slide level2">
@@ -224,11 +213,11 @@ data.</em></p></li>
 <ol type="1">
 <li class="fragment"><strong>Neural networks</strong> are basically
 nested regression models with discontinuities.</li>
+<li class="fragment"><strong>Loss gradients</strong> link model
+parameters to the overall accuracy of the model.</li>
 <li class="fragment"><strong>Backpropagation</strong> is a technique
 that allows us to calculate the loss gradient of every parameter in a
 network.</li>
-<li class="fragment"><strong>Loss gradients</strong> link model
-parameters to the overall accuracy of the model.</li>
 <li class="fragment"><strong>Gradient descent</strong> is an algorithm
 for updating parameters using loss gradients to improve accuracy.</li>
 <li class="fragment">By “stacking” neurons and introducing
@@ -372,11 +361,11 @@ class="math inline">\(b\)</span>.</li>
 </ul></li>
 </ul>
 </section>
-<section id="calculating-the-gradients" class="slide level2">
-<h2>Calculating the gradients</h2>
+<section id="understanding-gradients" class="slide level2">
+<h2>Understanding Gradients</h2>
 <ul>
-<li class="fragment">Deep Learning libraries automate this step, but
-it’s easy to do by hand!</li>
+<li class="fragment">I find calculating it “by hand” helps me understand
+what’s happening.</li>
 <li class="fragment"><a
 href="https://en.wikipedia.org/wiki/Partial_derivative#Definition">Definition
 of a partial derivative</a>:</li>
@@ -387,22 +376,25 @@ of a partial derivative</a>:</li>
 \]</span></p>
 </div>
 </section>
-<section id="calculating-numerically" class="slide level2">
-<h2>Calculating numerically</h2>
+<section id="numerical-calculation" class="slide level2">
+<h2>Numerical calculation</h2>
 <p><span class="math display">\[
 \frac{\delta f(x)}{\delta x} \;=\; \lim_{h \to 0} \frac{f(x+h)-f(x)}{h}
 \]</span></p>
+<div class="fragment">
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a>h <span class="op">=</span> <span class="fl">0.0001</span>                           <span class="co"># h as some arbitrarily small value</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>fx <span class="op">=</span>  (y0 <span class="op">-</span> (x0 <span class="op">*</span>  w    <span class="op">+</span> b)).<span class="bu">pow</span>(<span class="dv">2</span>) <span class="co"># f(x)   (squared loss)</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a>fxh <span class="op">=</span> (y0 <span class="op">-</span> (x0 <span class="op">*</span> (w<span class="op">+</span>h) <span class="op">+</span> b)).<span class="bu">pow</span>(<span class="dv">2</span>) <span class="co"># f(x+h)</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a>dfx <span class="op">=</span> (fxh<span class="op">-</span>fx)<span class="op">/</span>h                     <span class="co"># (f(x+h)-f(x))/h</span></span></code></pre></div>
+class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Actual Python/PyTorch Code</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>h <span class="op">=</span> <span class="fl">0.0001</span>                           <span class="co"># h as some arbitrarily small value</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a>fx <span class="op">=</span>  (y0 <span class="op">-</span> (x0 <span class="op">*</span>  w    <span class="op">+</span> b)).<span class="bu">pow</span>(<span class="dv">2</span>) <span class="co"># f(x)   (squared loss)</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>fxh <span class="op">=</span> (y0 <span class="op">-</span> (x0 <span class="op">*</span> (w<span class="op">+</span>h) <span class="op">+</span> b)).<span class="bu">pow</span>(<span class="dv">2</span>) <span class="co"># f(x+h)</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a>dfx <span class="op">=</span> (fxh<span class="op">-</span>fx)<span class="op">/</span>h                     <span class="co"># (f(x+h)-f(x))/h</span></span></code></pre></div>
 <ul>
 <li class="fragment">When <span class="math inline">\(x, y = 1.37,
 3.91\)</span></li>
 <li class="fragment"><span class="math inline">\(\frac{\delta L}{\delta
 w} \approx -8.23\)</span></li>
 </ul>
+</div>
 </section>
 <section id="how-do-we-use-this-gradient" class="slide level2">
 <h2>How do we use this gradient?</h2>
@@ -559,11 +551,11 @@ class="slide level2">
 <h2>What if we started layering our models?</h2>
 <p><img data-src="figures/nn_2layer_1input.png" /></p>
 <ul>
-<li class="fragment"><span class="math inline">\(h_1 = w_{1}X +
+<li class="fragment"><span class="math inline">\(h_1 = w_{1}x +
 b_{1}\)</span></li>
-<li class="fragment"><span class="math inline">\(Y = w_{2}h_1 +
+<li class="fragment"><span class="math inline">\(y = w_{2}h_1 +
 b_{2}\)</span></li>
-<li class="fragment">ergo <span class="math inline">\(Y = w_{2}(w_{1}X +
+<li class="fragment"><span class="math inline">\(y = w_{2}(w_{1}x +
 b_{1}) + b_{2}\)</span></li>
 </ul>
 </section>
@@ -571,33 +563,55 @@ b_{1}) + b_{2}\)</span></li>
 <h2>And stacking it?</h2>
 <p><img data-src="figures/nn_141.png" /></p>
 <ul>
-<li class="fragment"><span class="math inline">\(h_i = w_{1i}X +
+<li class="fragment"><span class="math inline">\(h_i = w_{1i}x +
 b_{1i}\)</span> (bias omitted from diagram for simplicity)</li>
-<li class="fragment"><span class="math inline">\(Y = \sum_i w_{2i}h_i +
+<li class="fragment"><span class="math inline">\(y = \sum_i w_{2i}h_i +
 b_{2i}\)</span></li>
-<li class="fragment">ergo <span class="math inline">\(Y = \sum_i
-w_{2i}(w_{1i}X + b_{1i}) + b_{2i}\)</span></li>
+<li class="fragment"><span class="math inline">\(y = \sum_i
+w_{2i}(w_{1i}x + b_{1i}) + b_{2i}\)</span></li>
 </ul>
 </section>
 <section id="we-could-create-a-model-like-this" class="slide level2">
 <h2>We could create a model like this:</h2>
 <p><img data-src="figures/nn_241.png" /></p>
 </section>
-<section id="but-how-do-we-fit-something-like-this"
-class="slide level2">
-<h2>But how do we fit something like this?</h2>
+<section id="but-how-do-we-train-this-model" class="slide level2">
+<h2>But how do we train this model?</h2>
 <p><img data-src="figures/nn_2layer_1input.png" /></p>
 <ul>
-<li class="fragment">Define loss: <span class="math inline">\(L(w_1,
-b_1, w_2, b_2)\)</span></li>
+<li class="fragment">If we can calculate loss gradients, we can use
+Gradient Descent.</li>
+<li class="fragment">Define loss wrt parameters: <span
+class="math inline">\(L(w_1, b_1, w_2, b_2)\)</span></li>
 <li class="fragment">How do we calculate <span
 class="math inline">\(\frac{\delta L}{\delta w_1}\)</span>, <span
-class="math inline">\(\frac{\delta L}{\delta w_2}\)</span>, etc.?</li>
+class="math inline">\(\frac{\delta L}{\delta w_2}\)</span>, etc.?
+<ul>
+<li class="fragment">We could use the numerical method before.</li>
+<li class="fragment">But this requires 2 forward passes <em>per
+parameter</em>.</li>
+<li class="fragment">There’s something much faster.</li>
+</ul></li>
 </ul>
 </section>
-<section id="chains-of-equations" class="slide level2">
-<h2>Chains of equations</h2>
+<section id="backpropagation" class="slide level2">
+<h2>Backpropagation</h2>
+<ul>
+<li class="fragment">Using the chain rule, we can state all gradients as
+a product of gradients on this graph.</li>
+<li class="fragment">From this we can derive expressions for all
+gradients as functions of known parameters, initial input and final
+output.</li>
+<li class="fragment">DL libraries manage all of this under the
+hood.</li>
+</ul>
+</section>
+<section id="breaking-down-lw_1-b_1-w_2-b_2" class="slide level2">
+<h2>Breaking down <span class="math inline">\(L(w_1, b_1, w_2,
+b_2)\)</span></h2>
 <p><img data-src="figures/backprop.png" /></p>
+<div class="columns">
+<div class="column" style="width:50%;">
 <ul>
 <li class="fragment"><span class="math inline">\(L = (y -
 \hat{y})^2\)</span>
@@ -612,45 +626,72 @@ b_{2}\)</span>
 \hat{y}}{\delta w_2} = h_1\)</span></li>
 <li class="fragment"><span class="math inline">\(\frac{\delta
 \hat{y}}{\delta h_1} = w_2\)</span></li>
+<li class="fragment"><span class="math inline">\(\frac{\delta
+\hat{y}}{\delta b_2} = 1\)</span></li>
 </ul></li>
-<li class="fragment"><span class="math inline">\(h_1 = w_{1}X +
+</ul>
+</div><div class="column" style="width:50%;">
+<ul>
+<li class="fragment"><span class="math inline">\(h_1 = w_{1}x +
 b_{1}\)</span>
 <ul>
 <li class="fragment"><span class="math inline">\(\frac{\delta
 h_1}{\delta w_1} = x\)</span></li>
+<li class="fragment"><span class="math inline">\(\frac{\delta
+h_1}{\delta b_1} = 1\)</span></li>
 </ul></li>
 </ul>
+</div>
+</div>
 </section>
-<section id="chain-rule" class="slide level2">
-<h2>Chain Rule</h2>
-<p>Gradient for <span class="math inline">\(w_1\)</span>:</p>
+<section id="gradient-for-w_1" class="slide level2">
+<h2>Gradient for <span class="math inline">\(w_1\)</span></h2>
+<p><span class="math inline">\(\frac{\delta L}{\delta \hat{w_2}} =
+?\)</span></p>
+<ul>
+<li class="fragment"><span class="math inline">\(\frac{\delta L}{\delta
+\hat{y}} = 2(y-\hat{y})\)</span></li>
+<li class="fragment"><span class="math inline">\(\frac{\delta
+\hat{y}}{\delta w_2} = h_1\)</span></li>
+</ul>
+<div class="fragment">
+<p>Applying the chain rule:</p>
 <p><span class="math display">\[\begin{align}
 \frac{\delta L}{\delta w_1} &amp;= \frac{\delta L}{\delta\hat{y}}
 \frac{\delta \hat{y}}{\delta w_2} \\
-                            &amp;= 2(y-\hat{y}) h_1
-
-\end{align}\]</span></p>
-<div class="fragment">
-<p>Gradient for <span class="math inline">\(w_2\)</span>:</p>
-<p><span class="math display">\[\begin{align}
-\frac{\delta L}{\delta w_1} &amp;= \frac{\delta L}{\delta\hat{y}}
-\frac{\delta\hat{y}}{\delta h_1} \frac{\delta h_1}{\delta w_1} \\
-                            &amp;= 2(y-\hat{y}) w_2 x
+                            &amp;= 2(y-\hat{y}) h_1 \\
+                            &amp;= 2(y-(w_{2}(w_{1}x + b_{1}) + b_{2}))
+w_{1}x + b_{1}
 
 \end{align}\]</span></p>
 </div>
 </section>
-<section id="backpropagation" class="slide level2">
-<h2>Backpropagation</h2>
+<section id="gradient-for-w_2" class="slide level2">
+<h2>Gradient for <span class="math inline">\(w_2\)</span></h2>
+<p><span class="math inline">\(\frac{\delta L}{\delta \hat{w_1}} =
+?\)</span></p>
 <ul>
-<li class="fragment">Using the chain rule, we can efficiently compute
-loss gradients of parameters throughout the network!</li>
-<li class="fragment">This is implemented neatly in deep learning
-libraries.</li>
+<li class="fragment"><span class="math inline">\(\frac{\delta L}{\delta
+\hat{y}} = 2(y-\hat{y})\)</span></li>
+<li class="fragment"><span class="math inline">\(\frac{\delta
+\hat{y}}{\delta h_1} = w_2\)</span></li>
+<li class="fragment"><span class="math inline">\(\frac{\delta
+h_1}{\delta w_1} = x\)</span></li>
 </ul>
+<div class="fragment">
+<p>Applying the chain rule:</p>
+<p><span class="math display">\[\begin{align}
+\frac{\delta L}{\delta w_1} &amp;= \frac{\delta L}{\delta\hat{y}}
+\frac{\delta\hat{y}}{\delta h_1} \frac{\delta h_1}{\delta w_1} \\
+                            &amp;= 2(y-\hat{y}) w_2 x \\
+                            &amp;= 2(y-(w_{2}(w_{1}x + b_{1})) + b_{2})
+w_{2}x
+
+\end{align}\]</span></p>
+</div>
 </section>
-<section id="code-vs-theory" class="slide level2">
-<h2>Code vs Theory</h2>
+<section id="theory-in-code" class="slide level2">
+<h2>Theory in Code</h2>
 <p><img data-src="figures/nn_241.png" /></p>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Define Model</span></span>
@@ -662,21 +703,37 @@ class="sourceCode numberSource python numberLines"><code class="sourceCode pytho
 class="slide level2">
 <h2>Mini-Batch Gradient Descent with MSE Loss</h2>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Define Batch Sampler, Loss Function and Optimization</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>data    <span class="op">=</span> DataLoader(dataset, batch_size<span class="op">=</span><span class="dv">8</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb3-3"><a href="#cb3-3"></a>loss_fn <span class="op">=</span> torch.nn.MSELoss()</span>
-<span id="cb3-4"><a href="#cb3-4"></a>optim   <span class="op">=</span> torch.optim.SGD(model.parameters(), lr<span class="op">=</span><span class="fl">5e-4</span>)</span></code></pre></div>
+class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Define Model</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>layer1  <span class="op">=</span> SimpleLinearNN(features_in<span class="op">=</span><span class="dv">2</span>, features_out<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>layer2  <span class="op">=</span> SimpleLinearNN(features_in<span class="op">=</span><span class="dv">4</span>, features_out<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a>model   <span class="op">=</span> torch.nn.Sequential(layer1, layer2)</span>
+<span id="cb3-5"><a href="#cb3-5"></a></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co"># Define Batch Sampler, Loss Function and Optimization</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>data    <span class="op">=</span> DataLoader(dataset, batch_size<span class="op">=</span><span class="dv">8</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-8"><a href="#cb3-8"></a>loss_fn <span class="op">=</span> torch.nn.MSELoss()</span>
+<span id="cb3-9"><a href="#cb3-9"></a>optim   <span class="op">=</span> torch.optim.SGD(model.parameters(), lr<span class="op">=</span><span class="fl">5e-4</span>)</span></code></pre></div>
 </section>
 <section id="training-a-model-for-50-epochs" class="slide level2">
 <h2>Training a Model for 50 Epochs</h2>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">50</span>):</span>
-<span id="cb4-2"><a href="#cb4-2"></a>    <span class="cf">for</span> inputs, labels <span class="kw">in</span> data: <span class="co"># X, y</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a>        optim.zero_grad() <span class="co"># Reset gradients</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>        preds <span class="op">=</span> model.forward(inputs) <span class="co"># Forward pass</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a>        loss <span class="op">=</span> loss_fn(preds, labels) <span class="co"># Loss calc</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a>        loss.backward()   <span class="co"># Calculate gradients</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a>        optim.step()      <span class="co"># Update parameters</span></span></code></pre></div>
+class="sourceCode numberSource python numberLines"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Define Model</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>layer1  <span class="op">=</span> SimpleLinearNN(features_in<span class="op">=</span><span class="dv">2</span>, features_out<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>layer2  <span class="op">=</span> SimpleLinearNN(features_in<span class="op">=</span><span class="dv">4</span>, features_out<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a>model   <span class="op">=</span> torch.nn.Sequential(layer1, layer2)</span>
+<span id="cb4-5"><a href="#cb4-5"></a></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co"># Define Batch Sampler, Loss Function and Optimization</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>data    <span class="op">=</span> DataLoader(dataset, batch_size<span class="op">=</span><span class="dv">8</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-8"><a href="#cb4-8"></a>loss_fn <span class="op">=</span> torch.nn.MSELoss()</span>
+<span id="cb4-9"><a href="#cb4-9"></a>optim   <span class="op">=</span> torch.optim.SGD(model.parameters(), lr<span class="op">=</span><span class="fl">5e-4</span>)</span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="co"># Training</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">50</span>):</span>
+<span id="cb4-13"><a href="#cb4-13"></a>    <span class="cf">for</span> inputs, labels <span class="kw">in</span> data: <span class="co"># X, y</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a>        optim.zero_grad() <span class="co"># Reset gradients</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a>        preds <span class="op">=</span> model.forward(inputs) <span class="co"># Forward pass</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>        loss <span class="op">=</span> loss_fn(preds, labels) <span class="co"># Loss calc</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a>        loss.backward()   <span class="co"># Calculate gradients</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>        optim.step()      <span class="co"># Update parameters</span></span></code></pre></div>
 </section>
 <section id="but-does-it-do-better" class="slide level2">
 <h2>But: does it do better?</h2>
@@ -688,6 +745,11 @@ class="sourceCode numberSource python numberLines"><code class="sourceCode pytho
 to a linear model!</li>
 </ul>
 </div>
+</section></section>
+<section>
+<section id="deep-learning-basics" class="title-slide slide level1">
+<h1>Deep Learning Basics</h1>
+<p><em>Now we’re doing deep learning!</em></p>
 </section>
 <section id="the-missing-ingredient" class="slide level2">
 <h2>The Missing Ingredient</h2>
@@ -707,10 +769,8 @@ regression!</li>
 <li class="fragment">Sigmoid transformation: <span
 class="math inline">\(y = \frac{1}{1+e^{-z}}\)</span></li>
 </ol>
-</section>
-<section id="sigmoid-transformation" class="slide level2">
-<h2>Sigmoid transformation</h2>
-<iframe width="100%" height="400px" frameborder="0" seamless="seamless" scrolling="no" src="figures/sigmoid.html">
+<div class="fragment">
+<iframe width="100%" height="300px" frameborder="0" seamless="seamless" scrolling="no" src="figures/sigmoid.html">
 </iframe>
 <ul>
 <li class="fragment"><span class="math inline">\(\sigma(x)\)</span>
@@ -718,6 +778,7 @@ bounded between 0 and 1</li>
 <li class="fragment">When <span class="math inline">\(x=0\)</span>,
 <span class="math inline">\(\sigma(x)=0.5\)</span>.</li>
 </ul>
+</div>
 </section>
 <section id="artificial-neuron" class="slide level2">
 <h2>Artificial Neuron</h2>
@@ -757,11 +818,6 @@ class="slide level2">
 <iframe width="100%" height="500px" frameborder="0" seamless="seamless" scrolling="no" src="figures/figure12.html">
 </iframe>
 </div>
-</section></section>
-<section>
-<section id="deep-learning-basics" class="title-slide slide level1">
-<h1>Deep Learning Basics</h1>
-<p><em>Now we’re doing deep learning!</em></p>
 </section>
 <section id="when-to-stop-training" class="slide level2">
 <h2>When to stop training?</h2>
@@ -818,17 +874,17 @@ class="sourceCode numberSource python numberLines"><code class="sourceCode pytho
 <section id="comprehension-check" class="slide level2">
 <h2>Comprehension Check</h2>
 <ol type="1">
-<li class="fragment">Neural networks are basically nested regression
-models with discontinuities.</li>
-<li class="fragment">Backpropagation is a technique that allows us to
-calculate the loss gradient of every parameter in a network.</li>
-<li class="fragment">Loss gradients link parameters to the overall
-accuracy of the model.</li>
-<li class="fragment">Stochastic gradient descent is an algorithm for
-updating parameters using loss gradients to improve accuracy.</li>
-<li class="fragment">By “stacking” lots of neurons and introducing
-discontinuities, we can learn increasingly complex patterns in
-data.</li>
+<li class="fragment"><strong>Neural networks</strong> are basically
+nested regression models with discontinuities.</li>
+<li class="fragment"><strong>Loss gradients</strong> link model
+parameters to the overall accuracy of the model.</li>
+<li class="fragment"><strong>Backpropagation</strong> is a technique
+that allows us to calculate the loss gradient of every parameter in a
+network.</li>
+<li class="fragment"><strong>Gradient descent</strong> is an algorithm
+for updating parameters using loss gradients to improve accuracy.</li>
+<li class="fragment">By “stacking” neurons and introducing
+discontinuities, we can learn complex patterns in data.</li>
 </ol>
 </section>
 <section id="next-time" class="slide level2">
