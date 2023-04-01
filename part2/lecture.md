@@ -1,39 +1,43 @@
 ---
-title: "Demystifying Deep Learning"
-subtitle: "An Introduction to Neural Networks for Social Scientists"
+title: "GPT for Social Research"
+subtitle: "How and Whether Large Language Models Can Help Social Scientists"
 author: "Dr Musashi Jacobs-Harukawa, DDSS Princeton"
-date: "23 Mar 2023"
+date: "3 Apr 2023"
 mainfont: "IBM Plex Sans-Light"
 aspectratio: 1610
 theme: "white"
 css: "minimal-theme.css"
 ---
 
-
-# Motivation
+# Introduction
 
 ## Who is this for?
 
-- Many social scientists use quantitative approaches to study complex questions.
-- Familiarity with statistics, maybe also machine learning.
-- But **deep learning** seems daunting.
-- Aim is not to simplify subject, but to translate existing knowledge and expertise.
+## What's Coming
 
-:::notes
-- In short, me from a few years ago.
-- Received training in quantitative methods, causal inference, some machine learning
-- But deep learning always treated as a separate super-complicated thing
-- Lots of resources for learning deep learning out there, but focus tends to be for (I assume) a CS audience.
-- As quantitative social scientists, we're not seeking to avoid the math--on the contrary, we want to understand the tools and the resulting models. More on this in a bit.
-:::
+# GPT in Social Research
 
-## What is Deep Learning?
+_None of these papers were public when I pitched the talk_
 
-- Approach to using computers to learn patterns in data
-- based around a modular set of tools loosely inspired by biological neurons.
-<!--- Basis of many advanced systems seen today.-->
+# How it works
 
-::: notes
-- "Machine learning" (it is in fact arguably a subfield)
-:::
+## Language as Conditional Probabilities
+
+## Autoregressive Language Generation
+
+## How to Train a Generative LM
+
+## Is Completion... Everything?
+
+- Multitask Learning
+- Foundation Models
+
+## Zero-shot
+
+- What is zero-shot, and how do we do it?
+
+
+## Few-shot/in-context
+
+
 

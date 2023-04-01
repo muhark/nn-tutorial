@@ -18,6 +18,25 @@ author: "Musashi Jacobs-Harukawa"
 
 ## General Structure
 
+- Context/Format - catching you up on what is happening, what it means, and how it relates to us
+- What people are already doing
+	- One model to rule them all?
+	- Using LLMs to study society?
+- How it works (in a relevant level of detail?)
+	- Language as conditional probabilities / autoregressive language generation
+	- Training a generative model
+	- Completion -> everything else
+		- Zero-shot and in-context learning
+		- Prompt engineering
+	- Instruction-tuning
+	- What's coming next?...
+		- Bigger
+		- Smaller
+- Considerations
+	- Reproducibility
+	- Transparency
+	- Privacy
+- Discussing papers in more detail?
 
 
 # Reading Notes
