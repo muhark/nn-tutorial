@@ -13,6 +13,12 @@ author: "Musashi Jacobs-Harukawa"
 	- What is completion, zero-shot learning, in-context learning, few-shot learning
 
 
+- Note: I still simplify at places. (Will try and highlight where).
+- The choice of where to simplify is based on what I think is a useful level of abstraction that still allows us to engage
+
+
+Structuring the explanation
+
 
 ## Rough Intro
 
@@ -49,11 +55,31 @@ author: "Musashi Jacobs-Harukawa"
 
 ## How it Works
 
+1. What is it?
+2. How is it trained? (and tuned?)
+3. Is Completion Everything?
+
+### What is it?
+
+- Sequence-to-sequence model
+	- Maps from one sequence to another
+	- Language as a sequence?
+
+- Language as a Conditional Probability Distribution
+
+- Autoregressive Language Generation
+
+- Tokenization and Vocabularies
+
+### How is it trained?
+
+
+
+
 
 # Reading Notes
 
-Relevant papers:
-
+## Social Science
 
 - Using LLMs to learn about the world:
 	- Argyle et al 2023
@@ -61,13 +87,30 @@ Relevant papers:
 	- OpinionQA
 	- Also discuss precedence of neural LMs as tool for corpus summary/description, e.g. Rodman etc.
 
-
 - Using LLMs for zero-shot classification
 	- Ornstein et al 2022
 	- Gilardi et al 2023
 
+## Ethics
+
 - Ethical Aspects of LLMs
 	- Bender et al 2021 (?)
+
+## Technical
+
+### Brown et al 2020 (GPT-3)
+
+Training Data:
+
+- CommonCrawl (deduplicated, similarity to reference corpora), `https://commoncrawl.org/the-data/`
+- WebText2 (Radford et al 2019) OpenAI's internal dataset. Starting point all outbound links from Reddit with at least 3 karma - heuristic indicating whether people found something interesting, educational or funny.
+- Books1 and 2 (`bookcorpus` and a mystery)
+- English Wikipedia (as it sounds)
+
+Pre-training:
+
+- Next word prediction
+
 
 - Technical Papers on LLMs
 	- Vaswani et al?
@@ -76,4 +119,14 @@ Relevant papers:
 
 # Drafting
 
+
+## How it Works
+
+# Graveyard
+
+- Nov 11: "How to Train Your Stochastic Parrot: LLMs for Political Texts" [@ornstein2022]
+- Feb 21: "Out of One, Many: Using LMs to Simulate Human Samples" [@argyle2023]
+- Mar 7: "LLMs Can Argue in Convincing and Novel Ways About Politics" [@palmer2023]
+- Mar 22: "Large Language Models Can Be Used to Estimate the Ideologies of Politicians in a Zero-Shot Learning Setting" [@wu2023]
+- Mar 27: "ChatGPT Outperforms Crowd-Workers for Text-Annotation Tasks" [@gilardi2023]
 
