@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Dr Musashi Jacobs-Harukawa, DDSS Princeton">
+  <title>GPT for Social Research</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reset.css">
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/reveal.js@^4//dist/theme/white.css" id="theme">
+  <link rel="stylesheet" href="minimal-theme.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">GPT for Social Research</h1>
+  <p class="subtitle">How and Whether Large Language Models Can Help
+Social Scientists</p>
+  <p class="author">Dr Musashi Jacobs-Harukawa, DDSS Princeton</p>
+  <p class="date">3 Apr 2023</p>
+</section>
+
+<section>
+<section id="introduction" class="title-slide slide level1">
+<h1>Introduction</h1>
+<p>Intro/Framing:</p>
+<ul>
+<li class="fragment">Google N-Gram viewer: GPT, AI, LLM</li>
+<li class="fragment">Social science research keeps on changing</li>
+</ul>
+</section>
+<section id="whats-going-on-in-the-world-of-ai" class="slide level2">
+<h2>What’s going on in the world of AI?</h2>
+<script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/3309_RC01/embed_loader.js"></script>
+<script type="text/javascript">
+trends.embed.renderExploreWidget("TIMESERIES", {"comparisonItem":[{"keyword":"GPT","geo":"US","time":"2022-09-01 2023-04-03"},{"keyword":"AI","geo":"US","time":"2022-09-01 2023-04-03"},{"keyword":"OpenAI","geo":"US","time":"2022-09-01 2023-04-03"}],"category":0,"property":""}, {"exploreQuery":"date=2022-09-01%202023-04-03&geo=US&q=GPT,AI,OpenAI&hl=en","guestPath":"https://trends.google.com:443/trends/embed/"});
+</script>
+</section>
+<section id="only-one-of-these-was-out-when-i-pitched-this-talk"
+class="slide level2">
+<h2>Only one of these was out when I pitched this talk…</h2>
+<p><em>Applications of GPT (or other LLMs) in social science</em>:</p>
+<ul>
+<li class="fragment">Nov 11: Text classification, scaling and topic
+modelling <span class="citation"
+data-cites="ornstein2022">(<strong>ornstein2022?</strong>)</span></li>
+<li class="fragment">Feb 21: Simulating survey responses for
+counterfactual persons <span class="citation"
+data-cites="argyle2023">(<strong>argyle2023?</strong>)</span></li>
+<li class="fragment">Mar 7: Generating persuasive political arguments
+<span class="citation"
+data-cites="palmer2023">(<strong>palmer2023?</strong>)</span></li>
+<li class="fragment">Mar 22: Estimate ideology of politicians <span
+class="citation"
+data-cites="wu2023">(<strong>wu2023?</strong>)</span></li>
+<li class="fragment">Mar 27: Out-perform crowd workers for annotation
+<span class="citation"
+data-cites="gilardi2023">(<strong>gilardi2023?</strong>)</span></li>
+<li class="fragment">Mar 30: Comparing the opinions of GPT to the public
+<span class="citation"
+data-cites="santurkar2023">(<strong>santurkar2023?</strong>)</span></li>
+</ul>
+</section>
+<section id="motivation" class="slide level2">
+<h2>Motivation</h2>
+<ul>
+<li class="fragment">Hard to keep up; hard to know where to start</li>
+<li class="fragment">(I argue) confusion over technology has already led
+to misapplication</li>
+</ul>
+</section>
+<section id="this-talk" class="slide level2">
+<h2>This Talk</h2>
+<ul>
+<li class="fragment">Technical explainer of GPT
+<ul>
+<li class="fragment">At a level that helps understand <em>what it
+is</em> and <em>why it behaves as it does</em>.</li>
+</ul></li>
+<li class="fragment">Discussion of current applications
+<ul>
+<li class="fragment">Innovations</li>
+<li class="fragment">Shortcomings</li>
+<li class="fragment">Future directions</li>
+</ul></li>
+<li class="fragment">Brief speculation on where this is headed</li>
+</ul>
+</section></section>
+<section>
+<section id="what-is-it" class="title-slide slide level1">
+<h1>What is it?</h1>
+
+</section>
+<section id="visual-demo" class="slide level2">
+<h2>Visual Demo</h2>
+<div class="fragment">
+<iframe width="100%" height="576px" frameborder="0" seamless="seamless" scrolling="no" src="figures/demo1.gif">
+</iframe>
+</div>
+</section>
+<section id="text-in-text-out" class="slide level2">
+<h2>Text In, Text Out</h2>
+<figure>
+<img
+data-src="https://jalammar.github.io/images/gpt3/01-gpt3-language-model-overview.gif"
+alt="Alammar, J (2020). How GPT3 Works - Visualizations and Animations" />
+<figcaption aria-hidden="true">Alammar, J (2020). <em>How GPT3 Works -
+Visualizations and Animations</em></figcaption>
+</figure>
+</section>
+<section id="language-as-a-sequence" class="slide level2">
+<h2>Language as a Sequence</h2>
+<p>“<em>GPT for Social Research</em>”</p>
+<ul>
+<li class="fragment">As a sequence of words:
+<ul>
+<li class="fragment">(<code>GPT</code>, <code>for</code>,
+<code>Social</code>, <code>Research</code>)</li>
+<li class="fragment"><span class="math inline">\(S_1=(w_1, w_2, w_3,
+w_4)\)</span></li>
+</ul></li>
+<li class="fragment">Actually we don’t use words (will come back to
+this)</li>
+</ul>
+</section>
+<section id="sequence-to-sequence" class="slide level2">
+<h2>Sequence-to-Sequence</h2>
+<p>Map from one sequence to another:</p>
+<ul>
+<li class="fragment"><span class="math inline">\(M(S_1) \rightarrow
+S_2\)</span></li>
+<li class="fragment">Conversation: “How are you?” -&gt; “I am
+great!”</li>
+<li class="fragment">Translation (EN-&gt;ES): “How are you?” -&gt;
+“¿Cómo estás?</li>
+</ul>
+<div class="fragment">
+<p>Challenge: map all possible <span class="math inline">\((S_i,
+S_j)\)</span> pairs?</p>
+</div>
+</section>
+<section id="separating-out-the-problem" class="slide level2">
+<h2>Separating out the Problem</h2>
+<p>Start with the word “Once”:</p>
+</section>
+<section id="language-as-conditional-probabilities"
+class="slide level2">
+<h2>Language as Conditional Probabilities</h2>
+<p>What words could come next?</p>
+<ul>
+<li class="fragment"><span class="math inline">\(Pr(\text{you} |
+\text{Once}) = 0.5\)</span></li>
+<li class="fragment"><span class="math inline">\(Pr(\text{upon} |
+\text{Once}) = 0.2\)</span></li>
+</ul>
+<div class="fragment">
+<pre><code>Once
+├── you  (0.5)
+├── upon (0.2)
+└── [...]</code></pre>
+</div>
+</section>
+<section id="following-one-branch" class="slide level2">
+<h2>Following one branch:</h2>
+<ul>
+<li class="fragment"><span class="math inline">\(Pr(\text{are} |
+\text{Once you}) = 0.21\)</span></li>
+<li class="fragment"><span class="math inline">\(Pr(\text{finish} |
+\text{Once you}) = 0.01\)</span></li>
+</ul>
+<div class="fragment">
+<pre><code>Once
+├── you
+│   ├── are     (0.21)
+│   ├── finish  (0.01)
+│   └── [...]
+└── upon</code></pre>
+</div>
+</section>
+<section id="following-the-other-branch" class="slide level2">
+<h2>Following the other branch:</h2>
+<ul>
+<li class="fragment"><span class="math inline">\(Pr(\text{a} |
+\text{Once upon}) = 0.99\)</span></li>
+<li class="fragment"><span class="math inline">\(Pr(\text{time} |
+\text{Once, upon, a}) = 0.99\)</span></li>
+</ul>
+<div class="fragment">
+<pre><code>Once
+├── you
+│   └── [...]
+└── upon
+    └── a (0.99)
+        └── time (0.99)</code></pre>
+</div>
+</section>
+<section id="autoregressive-language-models" class="slide level2">
+<h2>Autoregressive Language Models</h2>
+<ul>
+<li class="fragment">Input: “Once upon”</li>
+<li class="fragment">Step 1: M(“Once upon”) -&gt; “a”</li>
+<li class="fragment">Step 2: M(“Once upon a”) -&gt; “time”</li>
+<li class="fragment">Step 3: M(“Once upon a time”) -&gt; “,”</li>
+<li class="fragment">Step 4: M(“Once upon a time,”) -&gt; “there”</li>
+<li class="fragment">[…]</li>
+</ul>
+</section>
+<section id="demo-with-davinci" class="slide level2">
+<h2>Demo with <code>davinci</code></h2>
+<iframe width="100%" height="576px" frameborder="0" seamless="seamless" scrolling="no" src="figures/demo2.gif">
+</iframe>
+</section>
+<section id="tokenization-and-vocabularies" class="slide level2">
+<h2>Tokenization and Vocabularies</h2>
+<ul>
+<li class="fragment">Space of all words is too large (and
+inefficient?)</li>
+<li class="fragment">GPT (and other language models) use sub-word
+tokenization.</li>
+<li class="fragment">Easiest to see for yourself:</li>
+</ul>
+<div class="fragment">
+<p><img data-src="figures/tokenization.png" /></p>
+</div>
+</section>
+<section id="so-what-is-gpt" class="slide level2">
+<h2>So, what is GPT?</h2>
+<ul>
+<li class="fragment">GPT(-2, 3, 3.5) are a collection of
+sequence-to-sequence models that use auto-regressive language generation
+to produce textual outputs from textual inputs.</li>
+<li class="fragment">Internally, they treat all of language as a
+<em>conditional probability distribution over tokens</em>.
+<ul>
+<li class="fragment">Information is stored/retrieved as the most likely
+continuation of an input.</li>
+<li class="fragment">With caveats about “most likely” (to be
+discussed)</li>
+</ul></li>
+<li class="fragment"><strong>How is this probability distribution
+learned?</strong></li>
+</ul>
+</section></section>
+<section>
+<section id="how-is-it-trained" class="title-slide slide level1">
+<h1>How is it Trained?</h1>
+
+</section>
+<section id="training" class="slide level2">
+<h2>Training</h2>
+<figure>
+<img
+data-src="https://jalammar.github.io/images/gpt3/gpt3-parameters-weights.png"
+alt="Alammar, J (2020). How GPT3 Works - Visualizations and Animations" />
+<figcaption aria-hidden="true">Alammar, J (2020). <em>How GPT3 Works -
+Visualizations and Animations</em></figcaption>
+</figure>
+</section>
+<section id="how-to-train-a-gpt" class="slide level2">
+<h2>How to train a GPT</h2>
+<ul>
+<li class="fragment">The answer is surprisingly simple:</li>
+<li class="fragment"><strong>Next word prediction</strong></li>
+<li class="fragment">… a <em>lot</em> of parameters</li>
+<li class="fragment">… and a <em>lot</em> of examples</li>
+</ul>
+</section>
+<section id="next-word-prediction" class="slide level2">
+<h2>Next Word Prediction</h2>
+<figure>
+<img
+data-src="https://jalammar.github.io/images/gpt3/gpt3-training-examples-sliding-window.png"
+alt="Alammar (2020). How GPT3 Works - Visualizations and Animations" />
+<figcaption aria-hidden="true">Alammar (2020). <em>How GPT3 Works -
+Visualizations and Animations</em></figcaption>
+</figure>
+</section>
+<section id="a-lot-of-parameters" class="slide level2">
+<h2>A <em>Lot</em> of Parameters</h2>
+<div class="fragment">
+<p>If Y = _2X_2 + _1X_1 + _0$ has 3 parameters…</p>
+</div>
+<div class="fragment">
+<figure>
+<img
+data-src="https://images.ctfassets.net/xjan103pcp94/RnNRNwPnLNhKqvcD0m2NP/11f05969afde0883b1cddeac6adb2f65/image12.png"
+alt="Dong et al (2023)" />
+<figcaption aria-hidden="true"><a
+href="https://www.anyscale.com/blog/training-175b-parameter-language-models-at-1000-gpu-scale-with-alpa-and-ray">Dong
+et al (2023)</a></figcaption>
+</figure>
+</div>
+</section>
+<section id="a-lot-of-examples" class="slide level2">
+<h2>A <em>Lot</em> of Examples</h2>
+<ul>
+<li class="fragment">Approx. “300 billion training tokens, <span
+class="math inline">\(3.14E+23\)</span> FLOPS” [brown2020; Appendix
+D]</li>
+</ul>
+<div class="fragment">
+<figure>
+<img data-src="figures/table2-1.png" alt="Brown et al (2020)" />
+<figcaption aria-hidden="true">Brown et al (2020)</figcaption>
+</figure>
+</div>
+</section>
+<section id="where-do-these-examples-come-from" class="slide level2">
+<h2>Where do these examples come from?</h2>
+<ul>
+<li class="fragment"><a
+href="https://commoncrawl.org/the-data/">CommonCrawl</a> (filtered)
+<ul>
+<li class="fragment">Deduplicated, filtered based on similarity to
+corpora below</li>
+</ul></li>
+<li class="fragment">WebText2: OpenAI’s internal dataset. Starting point
+all outbound links from Reddit with at least 3 karma: “heuristic
+indicating whether people found something interesting, educational or
+funny.” [brown2020]</li>
+<li class="fragment">Books1 and Books2: <code>bookcorpus</code> and a
+mystery</li>
+<li class="fragment">English-language Wikipedia</li>
+</ul>
+</section></section>
+<section>
+<section id="how-do-we-use-it" class="title-slide slide level1">
+<h1>How do we use it?</h1>
+
+</section>
+<section id="is-completion-everything" class="slide level2">
+<h2>Is Completion… Everything?</h2>
+<ul>
+<li class="fragment">As size of models increased, a surprising behavior
+emerged:</li>
+<li class="fragment">GPT-3 could do tasks that it had not been trained
+on, without further training</li>
+<li class="fragment">Called “In-Context Learning”</li>
+</ul>
+</section>
+<section id="what-does-this-look-like" class="slide level2">
+<h2>What does this look like?</h2>
+<figure>
+<img data-src="figures/zero-shot.png" alt="Brown et al (2020)" />
+<figcaption aria-hidden="true">Brown et al (2020)</figcaption>
+</figure>
+</section>
+<section id="one-shot" class="slide level2">
+<h2>One-Shot</h2>
+<figure>
+<img data-src="figures/one-shot.png" alt="Brown et al (2020)" />
+<figcaption aria-hidden="true">Brown et al (2020)</figcaption>
+</figure>
+</section>
+<section id="few-shot" class="slide level2">
+<h2>Few-Shot</h2>
+<figure>
+<img data-src="figures/few-shot.png" alt="Brown et al (2020)" />
+<figcaption aria-hidden="true">Brown et al (2020)</figcaption>
+</figure>
+</section>
+<section id="evaluation-tasks" class="slide level2">
+<h2>Evaluation Tasks</h2>
+<p>LAMBADA:</p>
+<ul>
+<li class="fragment">“Alice was friends with Bob. Alice went to visit
+her friend ____.”</li>
+<li class="fragment">“George bought some baseball equipment, a ball, a
+glove and a ____.”</li>
+</ul>
+</section>
+<section id="more-parameters-better-zerofew-shot" class="slide level2">
+<h2>More Parameters = Better Zero/Few-Shot</h2>
+<figure>
+<img data-src="figures/lambada.png" alt="Brown et al (2020)" />
+<figcaption aria-hidden="true">Brown et al (2020)</figcaption>
+</figure>
+</section>
+<section id="foundation-models" class="slide level2">
+<h2>Foundation Models</h2>
+<ul>
+<li class="fragment">Pivot from task-specific models and
+architectures</li>
+<li class="fragment">towards one-model-fits-all approaches.</li>
+<li class="fragment"><span class="citation"
+data-cites="bommasani2021">(<strong>bommasani2021?</strong>)</span>
+outlines risks</li>
+</ul>
+</section></section>
+<section>
+<section id="improving-with-instruction-tuning"
+class="title-slide slide level1">
+<h1>Improving with Instruction-Tuning</h1>
+
+</section>
+<section id="completion-instruction" class="slide level2">
+<h2>Completion ≠ Instruction</h2>
+<figure>
+<img data-src="figures/instructions.png" alt="OpenAI (2022)" />
+<figcaption aria-hidden="true"><a
+href="https://openai.com/research/instruction-following">OpenAI
+(2022)</a></figcaption>
+</figure>
+</section>
+<section id="toxicity" class="slide level2">
+<h2>Toxicity</h2>
+<ul>
+<li class="fragment">Model trained to give most likely completion from
+Internet data</li>
+<li class="fragment">Have you been on Reddit?</li>
+</ul>
+</section>
+<section id="example-of-non-tuned-output" class="slide level2">
+<h2>Example of Non-Tuned Output</h2>
+<p>CW: Obscenities</p>
+<div class="fragment">
+<p>Describe the similarities and differences between baseball, darts and
+judo.</p>
+</div>
+<div class="fragment">
+<p>Darts isn’t a sport, it’s a board game. Baseball and judo are both
+games played with a bat. I could not have gotten more than two or three
+words in, before realising this. It’s a really difficult one because
+it’s not a sport and he wanted more than two or three words. I don’t
+know what the hell to tell him. Tell him to f*** off for being a
+d***bag, I would. You do not have to respond to such bulls***. In my
+world, answering questions is not optional. It won’t get you much, but
+it’s easier than telling someone to f*** off. I agree with him. I don’t
+get why you feel the need to explain yourself to that d****bag. If
+someone asks me a legitimate question, I’m not going to go “Hey, f***
+you.” That’s just juvenile. I think not satisfying someone who is making
+an honest attempt is being more respectful than going full r*****. Oh
+I’m not saying go out of your way to s*** all over him. Answer it short
+and to the point, just don’t let a c*** talk to you like that.</p>
+</div>
+</section>
+<section id="instruction-tuning-ouyang-et-al-2022" class="slide level2">
+<h2>Instruction-Tuning (Ouyang et al 2022)</h2>
+<ol type="1">
+<li class="fragment">Fine-tune GPT-3 with human-generated examples.</li>
+<li class="fragment">Use fine-tuned GPT-3 to generate multiple responses
+to prompts.</li>
+<li class="fragment">Use human annotators to rank responses.</li>
+<li class="fragment">Train a <em>Reward Model</em> on rankings.</li>
+<li class="fragment">Iteratively train GPT-3 with Reward Model and
+PPO.</li>
+</ol>
+</section>
+<section id="where-are-we-now" class="slide level2">
+<h2>Where are we now?</h2>
+<ul>
+<li class="fragment">Start with model that gives <em>most likely
+continuation</em> of sequence.</li>
+<li class="fragment">Adjust model to give <em>best response to
+instruction</em>.</li>
+<li class="fragment"><code>ChatGPT</code>: still unclear what they
+changed.
+<ul>
+<li class="fragment">Only a <a
+href="https://openai.com/blog/chatgpt">short blog post from
+OpenAI</a></li>
+<li class="fragment">Speculation: further instruction-tuning, special
+dialogue tokens?</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="back-to-social-science" class="title-slide slide level1">
+<h1>Back to Social Science</h1>
+<ul>
+<li class="fragment">What can we do with this/What are people
+doing?</li>
+<li class="fragment">Using GPT to perform inference on data (Ornstein,
+Gilardi)</li>
+<li class="fragment">Using GPT to perform inference on society (Argyle,
+Wu)</li>
+</ul>
+</section>
+<section id="innovations-gpt-as-a-coder" class="slide level2">
+<h2>Innovations: GPT as a Coder</h2>
+<figure>
+<img data-src="figures/ornstein-01.png" alt="(Ornstein2022?)" />
+<figcaption aria-hidden="true"><span class="citation"
+data-cites="Ornstein2022">(<strong>Ornstein2022?</strong>)</span></figcaption>
+</figure>
+</section>
+<section id="innovations-gpt-outperforms-crowd-coding"
+class="slide level2">
+<h2>Innovations: GPT Outperforms Crowd Coding</h2>
+<figure>
+<img data-src="figures/gilardi-01.png" alt="(Gilardi2023?)" />
+<figcaption aria-hidden="true"><span class="citation"
+data-cites="Gilardi2023">(<strong>Gilardi2023?</strong>)</span></figcaption>
+</figure>
+</section>
+<section id="section" class="slide level2">
+<h2></h2>
+</section></section>
+<section>
+<section id="where-everything-is-headed"
+class="title-slide slide level1">
+<h1>Where Everything is Headed</h1>
+
+</section>
+<section id="smaller-models" class="slide level2">
+<h2>Smaller Models</h2>
+<ul>
+<li class="fragment">LLaMa</li>
+<li class="fragment">Alpaca</li>
+</ul>
+</section>
+<section id="bigger-models" class="slide level2">
+<h2>Bigger Models</h2>
+<ul>
+<li class="fragment">Branch-Train-Merge</li>
+<li class="fragment">Ensembling LMs</li>
+</ul>
+</section>
+<section id="multimodal-models" class="slide level2">
+<h2>Multimodal Models</h2>
+<ul>
+<li class="fragment">GPT-4 is image+text</li>
+<li class="fragment">Audio, video</li>
+</ul>
+</section>
+<section id="broader-access" class="slide level2">
+<h2>Broader Access</h2>
+<ul>
+<li class="fragment"></li>
+</ul>
+</section></section>
+<section>
+<section id="appendix-extra-slides" class="title-slide slide level1">
+<h1>Appendix: Extra Slides</h1>
+
+</section>
+<section id="instruction-tuning" class="slide level2">
+<h2>Instruction-Tuning</h2>
+<figure>
+<img
+data-src="https://cdn.openai.com/instruction-following/draft-20220126f/methods.svg"
+alt="OpenAI (2022)" />
+<figcaption aria-hidden="true"><a
+href="https://openai.com/research/instruction-following">OpenAI
+(2022)</a></figcaption>
+</figure>
+</section>
+<section id="task-learners" class="slide level2">
+<h2>Task Learners</h2>
+<p>Turns out many tasks can be constructed as text completion:</p>
+<div class="fragment">
+<figure>
+<img
+data-src="https://raw.githubusercontent.com/yongzx/bigscience-workshop.github.io/gh-pages/en/pages/uploads/images/Octopus.png"
+alt="Sanh et al (2022)" />
+<figcaption aria-hidden="true">Sanh et al (2022)</figcaption>
+</figure>
+</div>
+</section></section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/reveal.js@^4//dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="https://unpkg.com/reveal.js@^4//plugin/notes/notes.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/search/search.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/zoom/zoom.js"></script>
+  <script src="https://unpkg.com/reveal.js@^4//plugin/math/math.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>
