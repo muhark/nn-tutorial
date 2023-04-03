@@ -92,3 +92,64 @@ Broad headers/concepts/ways to organize:
 - $\frac{\delta h_1}{\delta w_1} = X$
 - $\frac{\delta L}{\delta h_1} = -w_2$
 - $\frac{\delta L}{\delta w_1} = \frac{\delta L}{\delta h_1} \frac{\delta h_1}{\delta w_2}$
+
+## How does this work on a computer?
+
+Computational Graph for:
+
+$L = (y - w_{2}(w_{1}x + b_{1}) + b_{2})^2$
+
+. . .
+
+![](figures/forward_comp_graph.png)
+
+## Backward Pass
+
+![](figures/backward_pass.png)
+
+- Each operation can be reversed to get partial derivatives of inputs.
+	- PowBackward: $\frac{\delta \hat{y}}{\delta L} = 2(y-\hat{y})$
+	- Multiply: Forward: $a \times b$ ↔ Backward: $b$ or $a$
+
+
+## Backpropagation
+
+![](figures/backward_pass.png)
+
+## Mini-Batch Gradient Descent with MSE Loss
+
+``` {.python .numberLines}
+# Define Model
+layer1  = SimpleLinearNN(features_in=2, features_out=4)
+layer2  = SimpleLinearNN(features_in=4, features_out=1)
+model   = torch.nn.Sequential(layer1, layer2)
+
+# Define Batch Sampler, Loss Function and Optimization
+data    = DataLoader(dataset, batch_size=8, shuffle=True)
+loss_fn = torch.nn.MSELoss()
+optim   = torch.optim.SGD(model.parameters(), lr=5e-4)
+```
+
+## Training a Model for 50 Epochs
+
+``` {.python .numberLines}
+# Define Model
+layer1  = SimpleLinearNN(features_in=2, features_out=4)
+layer2  = SimpleLinearNN(features_in=4, features_out=1)
+model   = torch.nn.Sequential(layer1, layer2)
+
+# Define Batch Sampler, Loss Function and Optimization
+data    = DataLoader(dataset, batch_size=8, shuffle=True)
+loss_fn = torch.nn.MSELoss()
+optim   = torch.optim.SGD(model.parameters(), lr=5e-4)
+
+# Training
+for epoch in range(50):
+    for inputs, labels in data: # X, y
+        optim.zero_grad() # Reset gradients
+        preds = model.forward(inputs) # Forward pass
+        loss = loss_fn(preds, labels) # Loss calc
+        loss.backward()   # Calculate gradients
+        optim.step()      # Update parameters
+```
+
