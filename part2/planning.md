@@ -130,3 +130,12 @@ Pre-training:
 - Mar 22: "Large Language Models Can Be Used to Estimate the Ideologies of Politicians in a Zero-Shot Learning Setting" [@wu2023]
 - Mar 27: "ChatGPT Outperforms Crowd-Workers for Text-Annotation Tasks" [@gilardi2023]
 
+
+_Applications of GPT (or other LLMs) in social science_:
+
+- Nov 11: Text classification, scaling and topic modelling [@ornstein2022]
+- Feb 21: Simulating survey responses for counterfactual persons [@argyle2023]
+- Mar 7: Generating persuasive political arguments [@palmer2023]
+- Mar 22: Estimate ideology of politicians [@wu2023]
+- Mar 27: Out-perform crowd workers for annotation [@gilardi2023]
+- Mar 30: Comparing the opinions of GPT to the public [@santurkar2023]

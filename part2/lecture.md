@@ -11,33 +11,20 @@ css: "minimal-theme.css"
 
 # Introduction
 
-Intro/Framing:
-
-- Google N-Gram viewer: GPT, AI, LLM
-- Social science research keeps on changing
-
-## What's going on in the world of AI?
-
-<script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/3309_RC01/embed_loader.js"></script>
-<script type="text/javascript">
-trends.embed.renderExploreWidget("TIMESERIES", {"comparisonItem":[{"keyword":"GPT","geo":"US","time":"2022-09-01 2023-04-03"},{"keyword":"AI","geo":"US","time":"2022-09-01 2023-04-03"},{"keyword":"OpenAI","geo":"US","time":"2022-09-01 2023-04-03"}],"category":0,"property":""}, {"exploreQuery":"date=2022-09-01%202023-04-03&geo=US&q=GPT,AI,OpenAI&hl=en","guestPath":"https://trends.google.com:443/trends/embed/"});
-</script>
-
-## Only one of these was out when I pitched this talk...
+## How ~~and Whether~~ Large Language Models Can Help Social Scientists
 
 _Applications of GPT (or other LLMs) in social science_:
 
-- Nov 11: Text classification, scaling and topic modelling [@ornstein2022]
-- Feb 21: Simulating survey responses for counterfactual persons [@argyle2023]
-- Mar 7: Generating persuasive political arguments [@palmer2023]
-- Mar 22: Estimate ideology of politicians [@wu2023]
-- Mar 27: Out-perform crowd workers for annotation [@gilardi2023]
-- Mar 30: Comparing the opinions of GPT to the public [@santurkar2023]
+- Nov 11: Text classification, scaling and topic modelling
+- Feb 21: Simulate survey responses for counterfactual persons
+- Mar 7: Generate persuasive political arguments
+- Mar 22: Ideological scaling of US senators
+- Mar 27: Out-perform crowd workers for "manual" coding
 
 ## Motivation
 
 - Hard to keep up; hard to know where to start
-- (I argue) confusion over technology has already led to misapplication
+- (I argue) In some cases, confusion over technology has already led to misapplication
 
 ## This Talk
 
@@ -46,7 +33,7 @@ _Applications of GPT (or other LLMs) in social science_:
 - Discussion of current applications
 	- Innovations
 	- Shortcomings
-	- Future directions
+	- Guidelines
 - Brief speculation on where this is headed
 
 # What is it?
@@ -61,6 +48,11 @@ _Applications of GPT (or other LLMs) in social science_:
 
 ![Alammar, J (2020). _How GPT3 Works - Visualizations and Animations_](https://jalammar.github.io/images/gpt3/01-gpt3-language-model-overview.gif)
 
+## How do you "Model" Language?
+
+- We are familiar with modelling numerical processes (i.e. regression)
+- How do you construct a model that goes from language to language?
+
 ## Language as a Sequence
 
 "_GPT for Social Research_"
@@ -72,19 +64,21 @@ _Applications of GPT (or other LLMs) in social science_:
 
 ## Sequence-to-Sequence
 
-Map from one sequence to another:
+Model to map from one sequence to another:
 
 - $M(S_1) \rightarrow S_2$
-- Conversation: "How are you?" -> "I am great!"
-- Translation (EN->ES): "How are you?" -> "¿Cómo estás?
+- Conversation Model: "How are you?" → "I am great!"
+- Translation Model: "How are you?" → "¿Cómo estás?
 
 . . .
  
 Challenge: map all possible $(S_i, S_j)$ pairs?
 
-## Separating out the Problem
+## Simplifying the Problem
 
 Start with the word "Once":
+
+- What words could come next?
 
 
 ## Language as Conditional Probabilities
@@ -93,6 +87,7 @@ What words could come next?
 
 - $Pr(\text{you} | \text{Once}) = 0.5$ 
 - $Pr(\text{upon} | \text{Once}) = 0.2$
+- ...
 
 . . .
 
@@ -138,11 +133,12 @@ Once
 ## Autoregressive Language Models
 
 - Input: "Once upon"
-- Step 1: M("Once upon") -> "a"
-- Step 2: M("Once upon a") -> "time"
-- Step 3: M("Once upon a time") -> ","
-- Step 4: M("Once upon a time,") -> "there"
+- Step 1: _M_("Once upon") → "a"
+- Step 2: _M_("Once upon a") → "time"
+- Step 3: _M_("Once upon a time") → ","
+- Step 4: _M_("Once upon a time,") → "there"
 - [...]
+- Up to some maximum window size!
 
 ## Demo with `davinci`
 
@@ -150,11 +146,12 @@ Once
 
 ## Tokenization and Vocabularies
 
-- Space of all words is too large (and inefficient?)
-- GPT (and other language models) use sub-word tokenization.
-- Easiest to see for yourself:
+- Space of all words is very large
+- Individual characters carry too little signal about what comes next
+- Sub-word tokenization: something in between
+- GPT-2 has a vocabulary size of 50,257 unique tokens
 
-. . .
+## Tokenization Visualized:
 
 ![](figures/tokenization.png)
 
@@ -186,18 +183,18 @@ Once
 
 ## A _Lot_ of Parameters
 
-. . .
 
-If Y = \beta_2X_2 + \beta_1X_1 + \beta_0$ has 3 parameters...
+- $Y = \beta_2X_2 + \beta_1X_1 + \beta_0$ has 3 parameters
+- GPT-3 has approx. 175,000,000,000 parameters!
 
-. . .
+## Parameter Inflation
 
 ![[Dong et al (2023)](https://www.anyscale.com/blog/training-175b-parameter-language-models-at-1000-gpu-scale-with-alpa-and-ray)](https://images.ctfassets.net/xjan103pcp94/RnNRNwPnLNhKqvcD0m2NP/11f05969afde0883b1cddeac6adb2f65/image12.png)
 
 
 ## A *Lot* of Examples
 
-- Approx. "300 billion training tokens, $3.14E+23$ FLOPS" [brown2020; Appendix D]
+- Approx. "300 billion training tokens, $3.14E+23$ FLOPS" [@brown2020, Appendix D]
 
 . . .
 
@@ -206,14 +203,25 @@ If Y = \beta_2X_2 + \beta_1X_1 + \beta_0$ has 3 parameters...
 ## Where do these examples come from?
 
 - [CommonCrawl](https://commoncrawl.org/the-data/) (filtered)
-	- Deduplicated, filtered based on similarity to corpora below
+	- 41 months (2016-2019) of crawled Internet content
+	- Deduplicated and filtered from 45TB to 570GB.
 - WebText2: OpenAI's internal dataset.
-	Starting point all outbound links from Reddit with at least 3 karma: "heuristic indicating whether people found something interesting, educational or funny." [brown2020]
+	- Starting point all outbound links from Reddit with at least 3 karma:
+	- "heuristic indicating whether people found something interesting, educational or funny." [@brown2020]
 - Books1 and Books2: `bookcorpus` and a mystery
 - English-language Wikipedia
 
 
-# How do we use it?
+# Usage
+
+## As a Completion Tool?
+
+- Some uses for a most-likely-continuation tool of the Internet
+	- Creative writing?
+
+. . .
+
+![Woolf (2019)](https://minimaxir.com/2019/09/howto-gpt2/openai-demo_hu29073091f10de3606ad0a491ca608433_183878_1200x1200_fit_gaussian_3.png)
 
 ## Is Completion... Everything?
 
@@ -233,7 +241,7 @@ If Y = \beta_2X_2 + \beta_1X_1 + \beta_0$ has 3 parameters...
 
 ![Brown et al (2020)](figures/few-shot.png)
 
-## Evaluation Tasks
+## Evaluation Example
 
 LAMBADA:
 
@@ -244,14 +252,20 @@ LAMBADA:
 
 ![Brown et al (2020)](figures/lambada.png)
 
-## Foundation Models
+## Foundation Models [@bommasani2021]
 
-- Pivot from task-specific models and architectures
+- Pivot away from task-specific models and architectures
 - towards one-model-fits-all approaches.
-- @bommasani2021 outlines risks
-
 
 # Improving with Instruction-Tuning
+
+## Instruction-Tuning (Ouyang et al 2022)
+
+- Subsequent model (`InstructGPT`) added novel training approach:
+	- Reinforcement Learning with Human Feedback (RLHF)
+- Objectives:
+	- Make model better at following instructions (instead of continuing)
+	- Make model less likely to produce harmful/toxic language.
 
 ## Completion ≠ Instruction
 
@@ -260,11 +274,11 @@ LAMBADA:
 ## Toxicity
 
 - Model trained to give most likely completion from Internet data
-- Have you been on Reddit?
+- _Have you been on Reddit?_
 
-## Example of Non-Tuned Output
+## Example of Non-Tuned Output (from OPT-30B)
 
-CW: Obscenities
+**CW: Obscenities**
 
 . . .
 
@@ -272,75 +286,188 @@ Describe the similarities and differences between baseball, darts and judo.
 
 . . .
 
-Darts isn't a sport, it's a board game. Baseball and judo are both games played with a bat.
-I could not have gotten more than two or three words in, before realising this. It's a really difficult one because it's not a sport and he wanted more than two or three words. I don't know what the hell to tell him.
-Tell him to f\*\*\* off for being a d\*\*\*bag, I would. You do not have to respond to such bulls\*\*\*.
-In my world, answering questions is not optional. It won't get you much, but it's easier than telling someone to f\*\*\* off.
-I agree with him. I don't get why you feel the need to explain yourself to that d\*\*\*\*bag.
-If someone asks me a legitimate question, I'm not going to go "Hey, f\*\*\* you." That's just juvenile. I think not satisfying someone who is making an honest attempt is being more respectful than going full r\*\*\*\*\*.
-Oh I'm not saying go out of your way to s\*\*\* all over him. Answer it short and to the point, just don't let a c\*\*\* talk to you like that.
+_Darts isn't a sport, it's a board game. Baseball and judo are both games played with a bat._
 
-## Instruction-Tuning (Ouyang et al 2022)
+. . .
 
-1. Fine-tune GPT-3 with human-generated examples.
-2. Use fine-tuned GPT-3 to generate multiple responses to prompts.
-3. Use human annotators to rank responses.
-4. Train a _Reward Model_ on rankings.
-5. Iteratively train GPT-3 with Reward Model and PPO.
+_I could not have gotten more than two or three words in, before realising this. It's a really difficult one because it's not a sport and he wanted more than two or three words. I don't know what the hell to tell him._
 
-## Where are we now?
+. . .
 
-- Start with model that gives _most likely continuation_ of sequence.
-- Adjust model to give _best response to instruction_.
-- `ChatGPT`: still unclear what they changed.
-	- Only a [short blog post from OpenAI](https://openai.com/blog/chatgpt)
-	- Speculation: further instruction-tuning, special dialogue tokens?
+_Tell him to f\*\*\* off for being a d\*\*\*bag, I would. You do not have to respond to such bulls\*\*\*._
+
+. . .
+
+_In my world, answering questions is not optional. It won't get you much, but it's easier than telling someone to f\*\*\* off._
+
+## Instruction-Tuning: Process
+
+![[OpenAI (2022)](https://openai.com/research/instruction-following)](https://cdn.openai.com/instruction-following/draft-20220126f/methods.svg)
+
+## Who are the Annotators?
+
+- 40 Upwork/Scale AI contractors
+- "group of labelers who were sensitive to preferences of different demographic groups" [@ouyang2022]
+- Screened using test on ability to filter toxic content
+
+## Recap: what is GPT now?
+
+- `GPT-2`: Start with model that gives _most likely continuation_ of sequence.
+- `GPT-3`: Make it bigger. Gains zero-shot abilities.
+- `InstructGPT`: Adjust model to give _best response to instruction_.
+- `ChatGPT`: unclear exactly what they changed (only a [short blog post from OpenAI](https://openai.com/blog/chatgpt)).
+	- Speculation: new user interface, more RLHF, add special tokens to structure dialogue.
 
 
 # Back to Social Science
 
-- What can we do with this/What are people doing?
-- Using GPT to perform inference on data (Ornstein, Gilardi)
-- Using GPT to perform inference on society (Argyle, Wu)
+_What can/should we do with this?_
 
-## Innovations: GPT as a Coder
+_What are people doing?_
 
-![@Ornstein2022](figures/ornstein-01.png)
+## Innovation 1: GPT as a Coder
 
-## Innovations: GPT Outperforms Crowd Coding
+![@ornstein2022](figures/ornstein-01.png)
 
-![@Gilardi2023](figures/gilardi-01.png)
+## Innovation 1: GPT Outperforms Crowd Coding
 
-##
+![@gilardi2023](figures/gilardi-01.png)
+
+## Challenge: Unknown Estimator Properties
+
+- Predictions given by `GPT` are:
+	- biased (socially and statistically) in an unknown way
+	- sensitive to exact phrasing of prompt
+- Problem: _we don't know if/when it will fail–or if it has failed!_
+- Solution: _forthcoming work_
+
+## Innovation 2: GPT as a Respondent
+
+_Silicon Sampling_ [@argyle2023]: prompt model with demographic traits then recover response:
+
+. . .
+
+<iframe width="100%" height="200px" frameborder="0" seamless='seamless' scrolling=no src="figures/argyle_01.png"></iframe>
+
+. . .
+
+1. Responses of GPT-3 without correction reflect general Internet user population: $P(V) = \int_B P(V, B_{GPT3})$
+2. By adding "backstory" of real demographic group to prompt, we can compute $P(V|B_{Group})P(B_{Group})$
+3. "As long as GPT-3 models the _conditional_ distribution $P(V|B)$ well, we can explore patterns in _any_ designated population."
+
+## A Few Warnings
+
+- Technical: _In-context learning ≠ Conditioning_
+	- GPT always returns $P(S_{out} | \mathcal{D}_{train}, S_{in})$
+	- Not possible to condition only on some aspects of $\mathcal{D}$.
+- Normative: _Counterfactual groups = stereotypes_
+	- Approach assumes attitudes are determined by traits.
+	- Single answer imposes monolithic view for demographic subgroup.
+- @santurkar2023 find their approach does not "work":
+	- Prompt does not make GPT return opinions representative of group
+
+## Innovation 3: GPT as Public Opinion
+
+- @wu2023 ask ChatGPT to choose the more liberal/conservative senator from given pairs.
+- Apply Bradley-Terry model to estimate latent ideological score (ChatScores)
+- Find that ChatScores better predict human evaluations than NOMINATE and CFscores.
+
+## Whose Opinions?
+
+- @santurkar2023 compares answers from GPT to US public opinion in Pew Research poll.
+- Finds substantial misalignment between views of LMs and public: equivalent to Dem-Rep divide on climate change.
+- Instruction-tuning makes models even less representative.
+
+. . .
+
+<iframe width="100%" height="576px" frameborder="0" seamless='seamless' scrolling=no src="figures/opinion_distance.png"></iframe>
+
+## Transparency, Reproducibility and Access
+
+- GPT is closed-source and proprietary:
+	- We don't know the full extent of the training data.
+	- We don't know the exact architecture.
+	- Hard to explain or predict behavior.
+- Reproducibility:
+	- Language generation can be deterministic, but usually not.
+	- Prior versions of models may not be available in the future
+- Access:
+	- GPT is fairly affordable: `text-davinci-003` (InstructGPT 175B, probably) is 0.02 USD/1000 tokens
+	- But this can add up: applying a short zero-shot prompt to a corpus of 10k sentences costs 20 USD
+
+## Some Guidelines for Using GPT in Social Research
+
+Do:
+
+- Use it as a technical assistant (programming, how-to)
+- Use it as a creative brainstorming tool (titles, pitches)
+
+. . .
+ 
+You can (with caveats):
+
+- Use it to automate manual coding
+- Use it to generate synthetic training examples
+
+. . .
+
+Don't:
+
+- Anthropomorphize it
+- Infer about _society_ from it
+- Assume that your results will be reproducible
+- Give it sensitive data!
 
 
-# Where Everything is Headed
+# Speculating on Future Tools
+
+## Open-Source
+
+- Open Source LLMs exist
+	- From HuggingFace, Meta, EleutherAI 
+	- @palmer2023 use OPT-30B (from Meta)
+- Pros: auditable and reproducible
+- Cons: massive hardware resource requirement
 
 ## Smaller Models
 
-- LLaMa
-- Alpaca
+- Alpaca (from Stanford CRFM): Instruction-tuned 7B parameter model
+- Can zero-shot performance be "transferred" by generating synthetic labels?
 
-## Bigger Models
+## Domain-Specific Models
 
-- Branch-Train-Merge
-- Ensembling LMs
+- Domain-specific models may outperform larger ones [@kocon2023]
+- Bloomberg GPT [@wu2023bloomberg]
+- Ensembling LMs [@li2022; @gururangan2023]
 
 ## Multimodal Models
 
 - GPT-4 is image+text
 - Audio, video
 
-## Broader Access
+## GPT-Easy
 
-- 
+- Simple web-based interface for using GPT at scale
+- Will have "guard rails" and transparent defaults built in
+- Currently in development:
+	- Looking for beta testers!
 
+## Topics I didn't cover (and where to find it)
+
+Technical:
+
+- Transfer Learning
+- Recursive Neural Networks and Sequence Modelling
+- Decoder-only Transformers
+- Encoder-Decoder Transformers
+- Multi-task Learning
+
+# References
+
+::: {#refs}
+:::
 
 # Appendix: Extra Slides
-
-## Instruction-Tuning
-
-![[OpenAI (2022)](https://openai.com/research/instruction-following)](https://cdn.openai.com/instruction-following/draft-20220126f/methods.svg)
 
 ## Task Learners
 
@@ -349,4 +476,12 @@ Turns out many tasks can be constructed as text completion:
 . . .
 
 ![Sanh et al (2022)](https://raw.githubusercontent.com/yongzx/bigscience-workshop.github.io/gh-pages/en/pages/uploads/images/Octopus.png)
+
+## Instruction-Tuning: In Words
+
+1. Use human annotators to generate ideal responses to selection of prompts.
+2. Use GPT-3 fine-tuned on human responses to generate multiple (synthetic) responses.
+3. Use human annotators to rank synthetic responses.
+4. Train a _Reward Model_ on prompt+responses+ranking to emulate human scores.
+5. Iteratively train GPT-3 with Reward Model and PPO.
 
